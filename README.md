@@ -580,6 +580,9 @@ Logout then login
 </details>
 
 
+## Move windows to new ws
+https://github.com/sobeitnow0/Auto-Move-to-New-Workspace
+
 ## ✅ Final Recommended Setup
 
 * TLP enabled

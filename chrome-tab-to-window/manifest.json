@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Move Tab to New Window",
+  "version": "1.0",
+  "description": "Alt+Down: move tab to new window, Alt+Up: restore to original window",
+  "permissions": ["tabs"],
+  "commands": {
+    "move-tab": {
+      "suggested_key": {
+        "default": "Alt+Down"
+      },
+      "description": "Move tab to new window"
+    },
+    "restore-tab": {
+      "suggested_key": {
+        "default": "Alt+Up"
+      },
+      "description": "Restore tab to original window"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

@@ -156,7 +156,7 @@ alias zs="code ~/.bashrc"
 alias zss="source ~/.bashrc"
 alias gedit="gnome-text-editor"
 alias sedit='sudo -E gnome-text-editor'
-alias ca='cd /home/nikhil/Desktop/linux_scripts; ./createAlias.sh'
+alias ca='~/Desktop/linux_scripts/createAlias.sh'
 
 # linux utils
 alias cpwd='pwd | wl-copy'
@@ -172,3 +172,8 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$PATH:/home/nikhil/Downloads/go1.26.3.linux-amd64/go/bin"
 alias sql='sudo -u postgres psql;'
 alias bkup='cp ~/.bashrc ~/Desktop/linux_scripts/;'
+alias pg="PGPASSWORD='admin' psql -U admin -d postgres -h localhost"
+alias check-storage='sudo ncdu ~/;'
+alias bk='cp ~/.bashrc ~/Desktop/linux_scripts/;'
+alias nr='npm run;'
+alias set-opacity="dconf write "/org/gnome/Ptyxis/Profiles/$(dconf read /org/gnome/Ptyxis/default-profile-uuid | tr -d "'")/opacity""

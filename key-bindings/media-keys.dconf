@@ -1,4 +1,10 @@
 [/]
 control-center=['<Super>i']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
 home=['<Super>e']
 rotate-video-lock-static=['<Super>o', 'XF86RotationLockToggle']
+
+[custom-keybindings/custom0]
+binding='<Shift><Control>5'
+command='obs --start-recording'
+name='obs start recording'

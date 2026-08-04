@@ -13,4 +13,4 @@ fi
 read -p "Enter command for alias: " cmd
 
 # Add alias to .bashrc
-echo "alias $alias_name='$cmd;'" >> ~/.bashrc
+echo "alias $alias_name='$cmd';" >> ~/.bashrc
