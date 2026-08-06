@@ -322,7 +322,7 @@ Paste:
 
 [global]
 
-oneshot_timeout = 500
+oneshot_timeout = 2000
 
 [main]
 
