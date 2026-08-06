@@ -5,6 +5,22 @@
 ---
 
 <details>
+<summary>🔄 2. Bluetooth Toggle Shortcut</summary>
+
+Use [bt-toggle-shortcut.sh](bt-toggle-shortcut.sh) to toggle Bluetooth from a custom keyboard shortcut.
+
+```bash
+chmod +x bt-toggle-shortcut.sh
+./bt-toggle-shortcut.sh
+```
+
+Then bind it in GNOME Settings → Keyboard → Keyboard Shortcuts.
+
+</details>
+
+---
+
+<details>
 <summary>🧠 1. Dual Boot Time Fix (Windows ↔ Ubuntu)</summary>
 
 ### Option A (Recommended: Ubuntu uses local time)

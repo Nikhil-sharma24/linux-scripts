@@ -5,6 +5,6 @@ home=['<Super>e']
 rotate-video-lock-static=['<Super>o', 'XF86RotationLockToggle']
 
 [custom-keybindings/custom0]
-binding='<Shift><Control>5'
-command='obs --start-recording'
-name='obs start recording'
+binding='<Alt>b'
+command='/home/nikhil/.local/bin/bt-toggle.sh'
+name='Bluetooth Toggle'

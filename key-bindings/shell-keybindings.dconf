@@ -2,4 +2,5 @@
 focus-active-notification=@as []
 shift-overview-down=['<Super><Alt>Down']
 shift-overview-up=['<Super><Alt>Up']
-toggle-message-tray=['<Super>n']
+toggle-message-tray=['<Alt>n']
+toggle-quick-settings=['<Alt>s']
