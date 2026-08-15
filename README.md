@@ -5,7 +5,7 @@
 ---
 
 <details>
-<summary>🔄 2. Bluetooth Toggle Shortcut</summary>
+<summary>🔄 0. Bluetooth Toggle Shortcut</summary>
 
 Use [bt-toggle-shortcut.sh](bt-toggle-shortcut.sh) to toggle Bluetooth from a custom keyboard shortcut.
 
