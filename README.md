@@ -2,6 +2,27 @@
 
 > One-stop setup for Ubuntu after fresh install (performance + dev ready)
 
+## Overview
+
+This guide collects the most useful Ubuntu/Linux fixes for a fresh setup: dual-boot time sync, performance tweaks, GNOME quality-of-life settings, and common post-install troubleshooting.
+
+## Quick Fixes
+
+### Enable AAC codecs
+
+
+```bash
+sudo apt install libspa-0.2-modules-extra libfdk-aac2
+systemctl --user restart pipewire pipewire-pulse wireplumber
+```
+
+### Common first steps
+
+- Fix Windows/Ubuntu clock mismatch
+- Enable ZRAM for better memory behavior
+- Set up Git SSH access
+- Apply GNOME tweaks for daily use
+
 ---
 
 <details>
