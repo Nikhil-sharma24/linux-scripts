@@ -11,7 +11,7 @@ export OSH='/home/nikhil/.oh-my-bash'
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
-# OSH_THEME="font"
+OSH_THEME="font"
 
 # If you set OSH_THEME to "random", you can ignore themes you don't like.
 # OMB_THEME_RANDOM_IGNORED=("powerbash10k" "wanelo")
@@ -169,6 +169,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path bash)"
+export PATH="$HOME/.local/bin:$PATH"
 export PATH="$PATH:/home/nikhil/Downloads/go1.26.3.linux-amd64/go/bin"
 alias sql='sudo -u postgres psql;'
 alias bkup='cp ~/.bashrc ~/Desktop/linux_scripts/;'
@@ -177,3 +178,43 @@ alias check-storage='sudo ncdu ~/;'
 alias bk='cp ~/.bashrc ~/Desktop/linux_scripts/;'
 alias nr='npm run;'
 alias set-opacity="dconf write "/org/gnome/Ptyxis/Profiles/$(dconf read /org/gnome/Ptyxis/default-profile-uuid | tr -d "'")/opacity""
+alias check-space='ncdu /;'
+alias db='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; ./start-essential.sh';
+alias dba='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; docker compose up -d --build';
+alias ds='sudo systemctl start docker'
+alias dstop='sudo systemctl stop docker && sudo systemctl stop docker.service && sudo systemctl stop docker.socket'
+alias dbf='docker compose up -d --build invoicehub-frontend'
+alias fl='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker;./start-dev-frontend.sh'
+alias python='python3';
+alias py='python3';
+
+# Prompt: hide clock (time) and user@host segments from the "font" theme.
+# Overrides run after oh-my-bash loads, so they survive theme updates.
+THEME_SHOW_CLOCK="false"
+function _omb_theme_PROMPT_COMMAND() {
+    local RC="$?"
+    local python_venv; _omb_prompt_get_python_venv
+    python_venv=$_omb_prompt_white$python_venv
+    local spack_env; _omb_prompt_get_spack_env
+    spack_env=$_omb_prompt_white$spack_env
+    if [[ ${RC} == 0 ]]; then
+        ret_status="${_omb_prompt_bold_green}"
+    else
+        ret_status="${_omb_prompt_bold_brown}"
+    fi
+    history -a
+    PS1="$spack_env$python_venv${_omb_prompt_bold_teal}\W $(scm_prompt_char_info)${ret_status}→ ${_omb_prompt_normal}"
+}
+alias dfd='docker compose down invoicehub-frontend';
+alias zsc='cursor ~/.bashrc';
+alias dbm='docker run --rm -it -p 5000:80 -p 3025:25 rnwood/smtp4dev';
+alias bk='./bk.sh';
+alias dd='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker;docker compose down';
+alias da='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; ./start-essential.sh -f -r -w';
+alias ssh-ictest='ssh -i "~/Desktop/vrya/certificates/Invoice Connect Test Instance Key Pair.pem" ec2-user@ec2-54-157-13-198.compute-1.amazonaws.com';
+alias ssh-icdev='ssh -i "~/Desktop/vrya/certificates/MayankGuptaACE.pem" ec2-user@ec2-52-7-125-240.compute-1.amazonaws.com';
+alias dbsftp='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker;docker run -d --name test-sftp --network aurea-retail-invoice-hub_default -p 2222:22   -v ~/sftp-ace/in:/home/foo/in   atmoz/sftp foo:password123:1001'
+alias dbs='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker;docker start test-sftp';
+alias delss='rm ~/Pictures/Screenshots/*';
+alias reconnect-earphones='echo -n "0000:03:00.3" | sudo tee /sys/bus/pci/drivers/xhci_hcd/unbind; sleep 3; echo -n "0000:03:00.3" | sudo tee /sys/bus/pci/drivers/xhci_hcd/bind';
+alias check-earphones='pactl list short sinks';

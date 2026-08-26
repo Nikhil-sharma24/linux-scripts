@@ -1,0 +1,6 @@
+{
+  "uuid": "force-bt-visible@nikhil",
+  "name": "Force Bluetooth Visible",
+  "description": "Keeps Bluetooth powered on and discoverable",
+  "shell-version": ["50"]
+}
