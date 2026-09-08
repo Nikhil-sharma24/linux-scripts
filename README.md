@@ -26,16 +26,31 @@ systemctl --user restart pipewire pipewire-pulse wireplumber
 ---
 
 <details>
-<summary>🔄 0. Bluetooth Toggle Shortcut</summary>
+<summary>🔄 0. Bluetooth Toggle Shortcut (Alt+B)</summary>
 
-Use [bt-toggle-shortcut.sh](bt-toggle-shortcut.sh) to toggle Bluetooth from a custom keyboard shortcut.
+Use [bluetooth/bt-toggle-shortcut.sh](bluetooth/bt-toggle-shortcut.sh) to toggle Bluetooth with a single keyboard shortcut that automatically reconnects to your devices.
 
+### Features
+- **Alt+B**: Toggle Bluetooth on/off
+- Automatically reconnects to previously connected devices when turning on
+- Falls back to default devices (UBON BT-370, OPPO Enco Buds3 Pro) if no stored connections
+- Parallel connection attempts for faster reconnection
+- Stores connected devices when turning off for smart reconnection
+
+### Install
 ```bash
-chmod +x bt-toggle-shortcut.sh
-./bt-toggle-shortcut.sh
+chmod +x bluetooth/bt-toggle-shortcut.sh
+./bluetooth/bt-toggle-shortcut.sh
 ```
 
-Then bind it in GNOME Settings → Keyboard → Keyboard Shortcuts.
+The script automatically sets up the Alt+B keybinding in GNOME.
+
+### How It Works
+- **When turning OFF**: Saves currently connected device MAC addresses
+- **When turning ON**: 
+  - Reconnects to previously connected devices (if stored)
+  - OR attempts to connect to both default devices in parallel
+  - Whichever device is in range connects first
 
 </details>
 
@@ -61,7 +76,7 @@ reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation
 ---
 
 <details>
-<summary>⚡ 3. ZRAM Setup</summary>
+<summary>⚡ 2. ZRAM Setup</summary>
 
 ### Install
 
@@ -97,7 +112,7 @@ swapon --show
 ---
 
 <details>
-<summary>⚡ 4. ZSWAP (Optional)</summary>
+<summary>⚡ 3. ZSWAP (Optional)</summary>
 
 ### Enable via GRUB
 
@@ -118,7 +133,7 @@ sudo update-grub
 ---
 
 <details>
-<summary>💻 5. Force Git to Use SSH</summary>
+<summary>💻 4. Force Git to Use SSH</summary>
 
 ```bash
 git config --global url."git@github.com:".insteadOf "https://github.com/"
@@ -130,7 +145,7 @@ ssh -T git@github.com
 ---
 
 <details>
-<summary>📋 6. Clipboard from Terminal</summary>
+<summary>📋 5. Clipboard from Terminal</summary>
 
 ### Install
 
@@ -151,7 +166,7 @@ wl-paste
 ---
 
 <details>
-<summary>🧩 7. VS Code Settings Transfer</summary>
+<summary>🧩 6. VS Code Settings Transfer</summary>
 
 ### Paths
 
@@ -173,7 +188,7 @@ cp keybindings.json ~/.config/Code/User/
 ---
 
 <details>
-<summary>🧱 8. GRUB Customization</summary>
+<summary>🧱 7. GRUB Customization</summary>
 
 ```bash
 sudo nano /etc/default/grub
@@ -185,7 +200,7 @@ sudo update-grub
 ---
 
 <details>
-<summary>🧠 9. Swap + ZRAM Strategy</summary>
+<summary>🧠 8. Swap + ZRAM Strategy</summary>
 
 * ZRAM → 100% RAM (priority 100)
 * Disk swap → fallback (priority -1)
@@ -199,7 +214,7 @@ swapon --show
 ---
 
 <details>
-<summary>🧪 10. Fix Stuck Terminal</summary>
+<summary>🧪 9. Fix Stuck Terminal</summary>
 
 ```bash
 killall gnome-terminal-server
@@ -211,7 +226,7 @@ ps aux | grep terminal
 ---
 
 <details>
-<summary>🧰 11. Essential Packages</summary>
+<summary>🧰 10. Essential Packages</summary>
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -223,7 +238,7 @@ sudo apt install -y git curl wget htop neovim xclip build-essential tlp zram-too
 ---
 
 <details>
-<summary>🧹 12. Remove Snap</summary>
+<summary>🧹 11. Remove Snap</summary>
 
 ```bash
 # Remove installed snap apps (optional)
@@ -245,7 +260,7 @@ sudo apt-mark hold snapd
 ---
 
 <details>
-<summary>⌨️ 13. Bash History Scrolling</summary>
+<summary>⌨️ 12. Bash History Scrolling</summary>
 
 ```bash
 echo '
@@ -262,7 +277,7 @@ bind -f ~/.inputrc
 
 
 <details>
-<summary>🚫 14. Global Git Ignore (.vscode)</summary>
+<summary>🚫 13. Global Git Ignore (.vscode)</summary>
 
 ### Set global gitignore file
 ```bash
@@ -283,7 +298,7 @@ cat ~/.gitignore_global
 
 
 <details>
-<summary>🪟 15. Move Window Controls to Left (Ubuntu / GNOME)</summary>
+<summary>🪟 14. Move Window Controls to Left (Ubuntu / GNOME)</summary>
 
 ```bash
 gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,maximize:'
@@ -294,7 +309,7 @@ gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,max
 
 
 <details>
-<summary>🪟 16. Install GNOME Extension Manager</summary>
+<summary>🪟 15. Install GNOME Extension Manager</summary>
 
 ```bash
 sudo apt install gnome-shell-extension-manager
@@ -326,7 +341,7 @@ Enable the extension.
 ---
 
 <details>
-<summary>🪟 17. Sticky Keys setup</summary>
+<summary>🪟 16. Sticky Keys setup</summary>
 
 # keyd One-Shot Modifier Setup (Wayland Compatible)
 
@@ -391,7 +406,7 @@ gsettings set org.gnome.desktop.a11y.keyboard stickykeys-enable false
 ---
 
 <details>
-<summary><strong>Use VS Code as sudoedit Editor</strong></summary>
+<summary><strong>17. Use VS Code as sudoedit Editor</strong></summary>
 
 <br>
 
@@ -445,7 +460,7 @@ this approach:
 ---
 
 <details>
-<summary><strong>Fix VS Code Multi-Cursor Shortcuts on Ubuntu/GNOME</strong></summary>
+<summary><strong>18. Fix VS Code Multi-Cursor Shortcuts on Ubuntu/GNOME</strong></summary>
 
 <br>
 
@@ -512,7 +527,7 @@ should work for:
 
 
 <details>
-<summary><strong>Macos like full screen move to new workspace</strong></summary>
+<summary><strong>19. Macos like full screen move to new workspace</strong></summary>
 
 ```bash
 gsettings set org.gnome.desktop.wm.keybindings toggle-fullscreen "['<Super>f']"

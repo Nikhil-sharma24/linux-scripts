@@ -1,16 +1,18 @@
 [apps/update-manager]
-launch-count=4
-launch-time=int64 1779459593
+first-run=false
+launch-count=16
+launch-time=int64 1786443998
 show-details=true
 window-height=651
 window-width=834
 
 [com/mattjakeman/ExtensionManager]
 height=792
-is-maximized=true
+is-maximized=false
 
 [com/ubuntu/update-notifier]
-release-check-time=uint32 1778402983
+no-show-notifications=true
+release-check-time=uint32 1788246154
 
 [net/nokyan/Resources]
 is-maximized=true
@@ -27,10 +29,11 @@ restore-window-size=false
 window-size=(uint32 80, uint32 24)
 
 [org/gnome/Ptyxis/Profiles/cf8f62d0ef331c0ff1a05b7669ed9952]
+opacity=1
 palette='Ubuntu'
 
 [org/gnome/Ptyxis/Shortcuts]
-close-tab='<Control>w'
+close-tab='<Shift><Control>w'
 copy-clipboard='<Control>c'
 move-next-tab='<Control>Down'
 move-previous-tab='<Control>Up'
@@ -43,21 +46,35 @@ select-all='<Control>a'
 [org/gnome/TextEditor]
 last-save-directory='file:///home/nikhil/Desktop'
 
+[org/gnome/calculator]
+base=10
+button-mode='basic'
+source-units=['degree']
+target-units=['radian']
+unit-category='angle'
+window-maximized=false
+window-size=(360, 616)
+
+[org/gnome/calendar]
+active-view='month'
+window-maximized=true
+window-size=(768, 600)
+
 [org/gnome/clocks]
-alarms=[{'name': <''>, 'id': <'32d3fbbc4841e94e2503c09a6a0f41ce'>, 'hour': <23>, 'minute': <25>, 'days': <@ai []>, 'snooze_minutes': <10>, 'ring_minutes': <5>, 'sound_uri': <'file:///usr/share/sounds/gnome/default/alarms/toys.oga'>}]
-timers=@aa{sv} []
+alarms=[{'name': <''>, 'id': <'32d3fbbc4841e94e2503c09a6a0f41ce'>, 'hour': <14>, 'minute': <27>, 'days': <@ai []>, 'snooze_minutes': <10>, 'ring_minutes': <5>, 'sound_uri': <'file:///usr/share/sounds/gnome/default/alarms/toys.oga'>}]
+timers=[{'duration': <900>, 'name': <''>}]
 
 [org/gnome/clocks/state/window]
-maximized=true
-panel-id='stopwatch'
-size=(0, 0)
+maximized=false
+panel-id='timer'
+size=(360, 374)
 
 [org/gnome/control-center]
 last-panel='keyboard'
-window-state=(980, 640, true)
+window-state=(980, 640, false)
 
 [org/gnome/desktop/a11y]
-always-show-universal-access-status=true
+always-show-universal-access-status=false
 
 [org/gnome/desktop/a11y/keyboard]
 bouncekeys-enable=false
@@ -103,7 +120,14 @@ duration-seconds=uint32 300
 interval-seconds=uint32 1800
 play-sound=true
 
+[org/gnome/desktop/calendar]
+show-weekdate=false
+
+[org/gnome/desktop/datetime]
+automatic-timezone=true
+
 [org/gnome/desktop/input-sources]
+per-window=false
 sources=[('xkb', 'us')]
 
 [org/gnome/desktop/interface]
@@ -116,19 +140,62 @@ icon-theme='Yaru-dark'
 show-battery-percentage=true
 
 [org/gnome/desktop/notifications]
-application-children=['org-gnome-ptyxis', 'org-gnome-nautilus', 'google-chrome', 'code', 'org-gnome-extensions', 'com-obsproject-studio', 'gnome-power-panel', 'kiro', 'org-gnome-characters', 'com-github-hluk-copyq', 'org-gnome-clocks', 'vlc', 'org-gnome-settings', 'uget-gtk', 'update-manager']
+application-children=['org-gnome-ptyxis', 'org-gnome-nautilus', 'google-chrome', 'code', 'org-gnome-extensions', 'com-obsproject-studio', 'gnome-power-panel', 'kiro', 'org-gnome-characters', 'com-github-hluk-copyq', 'org-gnome-clocks', 'vlc', 'org-gnome-settings', 'uget-gtk', 'update-manager', 'mountable-volume-1648c7ba48c796c1', 'pgadmin4', 'brave-browser', 'chrome-fmpnliohjhemenmnlpbfagaolkdacoja-default', 'freedownloadmanager', 'chrome-hnpfjngllnobngcgfapefoaidbinmjnm-default', 'cursor', 'brave-cahffjldabkglhokmdffandpdlpkkoao-default', 'org-gnome-loupe', 'filezilla', 'libreoffice26-2-writer', 'org-gnome-baobab', 'chrome-agimnkijcaahngcdmfeangaknmldooml-default', 'docker-desktop', 'chrome-cinhimbnkkaeohfgghhklpknlkffjgod-default', 'org-gnome-calendar', 'brave-jkgfkfaekegmkikamimbaphobeoggpil-default', 'brave-mnhnbemhpieojjblbffcghbjhkmbbkle-default', 'com-brave-browser', 'com-mattjakeman-extensionmanager', 'md-obsidian-obsidian', 'zoom']
 
 [org/gnome/desktop/notifications/application/auto-cpufreq-gtk]
 enable=true
 
+[org/gnome/desktop/notifications/application/brave-browser]
+application-id='brave-browser.desktop'
+
+[org/gnome/desktop/notifications/application/brave-cahffjldabkglhokmdffandpdlpkkoao-default]
+application-id='brave-cahffjldabkglhokmdffandpdlpkkoao-Default.desktop'
+enable=true
+
+[org/gnome/desktop/notifications/application/brave-jkgfkfaekegmkikamimbaphobeoggpil-default]
+application-id='brave-jkgfkfaekegmkikamimbaphobeoggpil-Default.desktop'
+
+[org/gnome/desktop/notifications/application/brave-mnhnbemhpieojjblbffcghbjhkmbbkle-default]
+application-id='brave-mnhnbemhpieojjblbffcghbjhkmbbkle-Default.desktop'
+
+[org/gnome/desktop/notifications/application/chrome-agimnkijcaahngcdmfeangaknmldooml-default]
+application-id='chrome-agimnkijcaahngcdmfeangaknmldooml-Default.desktop'
+
+[org/gnome/desktop/notifications/application/chrome-cinhimbnkkaeohfgghhklpknlkffjgod-default]
+application-id='chrome-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop'
+
+[org/gnome/desktop/notifications/application/chrome-fmpnliohjhemenmnlpbfagaolkdacoja-default]
+application-id='chrome-fmpnliohjhemenmnlpbfagaolkdacoja-Default.desktop'
+
+[org/gnome/desktop/notifications/application/chrome-hnpfjngllnobngcgfapefoaidbinmjnm-default]
+application-id='chrome-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'
+
 [org/gnome/desktop/notifications/application/code]
 application-id='code.desktop'
+
+[org/gnome/desktop/notifications/application/com-brave-browser]
+application-id='com.brave.Browser.desktop'
 
 [org/gnome/desktop/notifications/application/com-github-hluk-copyq]
 application-id='com.github.hluk.copyq.desktop'
 
+[org/gnome/desktop/notifications/application/com-mattjakeman-extensionmanager]
+application-id='com.mattjakeman.ExtensionManager.desktop'
+
 [org/gnome/desktop/notifications/application/com-obsproject-studio]
 application-id='com.obsproject.Studio.desktop'
+
+[org/gnome/desktop/notifications/application/cursor]
+application-id='cursor.desktop'
+
+[org/gnome/desktop/notifications/application/docker-desktop]
+application-id='docker-desktop.desktop'
+
+[org/gnome/desktop/notifications/application/filezilla]
+application-id='filezilla.desktop'
+
+[org/gnome/desktop/notifications/application/freedownloadmanager]
+application-id='freedownloadmanager.desktop'
 
 [org/gnome/desktop/notifications/application/gnome-power-panel]
 application-id='gnome-power-panel.desktop'
@@ -139,6 +206,21 @@ application-id='google-chrome.desktop'
 [org/gnome/desktop/notifications/application/kiro]
 application-id='kiro.desktop'
 
+[org/gnome/desktop/notifications/application/libreoffice26-2-writer]
+application-id='libreoffice26.2-writer.desktop'
+
+[org/gnome/desktop/notifications/application/md-obsidian-obsidian]
+application-id='md.obsidian.Obsidian.desktop'
+
+[org/gnome/desktop/notifications/application/mountable-volume-1648c7ba48c796c1]
+application-id='mountable-volume:1648C7BA48C796C1.desktop'
+
+[org/gnome/desktop/notifications/application/org-gnome-baobab]
+application-id='org.gnome.baobab.desktop'
+
+[org/gnome/desktop/notifications/application/org-gnome-calendar]
+application-id='org.gnome.Calendar.desktop'
+
 [org/gnome/desktop/notifications/application/org-gnome-characters]
 application-id='org.gnome.Characters.desktop'
 
@@ -147,6 +229,9 @@ application-id='org.gnome.clocks.desktop'
 
 [org/gnome/desktop/notifications/application/org-gnome-extensions]
 application-id='org.gnome.Extensions.desktop'
+
+[org/gnome/desktop/notifications/application/org-gnome-loupe]
+application-id='org.gnome.Loupe.desktop'
 
 [org/gnome/desktop/notifications/application/org-gnome-nautilus]
 application-id='org.gnome.Nautilus.desktop'
@@ -157,6 +242,9 @@ application-id='org.gnome.Ptyxis.desktop'
 [org/gnome/desktop/notifications/application/org-gnome-settings]
 application-id='org.gnome.Settings.desktop'
 
+[org/gnome/desktop/notifications/application/pgadmin4]
+application-id='pgadmin4.desktop'
+
 [org/gnome/desktop/notifications/application/uget-gtk]
 application-id='uget-gtk.desktop'
 
@@ -165,6 +253,9 @@ application-id='update-manager.desktop'
 
 [org/gnome/desktop/notifications/application/vlc]
 application-id='vlc.desktop'
+
+[org/gnome/desktop/notifications/application/zoom]
+application-id='Zoom.desktop'
 
 [org/gnome/desktop/peripherals/keyboard]
 delay=uint32 500
@@ -186,17 +277,21 @@ ubuntu-lock-on-suspend=false
 [org/gnome/desktop/search-providers]
 sort-order=['org.gnome.Settings.desktop', 'org.gnome.Contacts.desktop', 'org.gnome.Nautilus.desktop']
 
+[org/gnome/desktop/sound]
+allow-volume-above-100-percent=false
+
 [org/gnome/desktop/wm/keybindings]
 close=['<Control>q']
 move-to-monitor-down=['<Super><Shift>Down']
 move-to-monitor-left=['<Super><Shift>Left']
 move-to-monitor-right=['<Super><Shift>Right']
 move-to-monitor-up=['<Super><Shift>Up']
-move-to-workspace-1=['<Control><Alt>Left']
-move-to-workspace-2=['<Control><Alt>Right']
+move-to-workspace-1=['<Control><Alt>Up']
+move-to-workspace-2=@as []
 move-to-workspace-down=@as []
-move-to-workspace-left=['<Super><Shift>Page_Up', '<Super><Shift>KP_Prior', '<Super><Shift><Alt>Left', '<Control><Shift><Alt>Left']
-move-to-workspace-right=['<Super><Shift>Page_Down', '<Super><Shift>KP_Next', '<Super><Shift><Alt>Right', '<Control><Shift><Alt>Right']
+move-to-workspace-last=['<Control><Alt>Down']
+move-to-workspace-left=['<Control><Alt>Left']
+move-to-workspace-right=['<Control><Alt>Right']
 move-to-workspace-up=@as []
 show-desktop=['<Super>d']
 switch-applications=['<Super>Tab']
@@ -205,11 +300,14 @@ switch-group=['<Super>Above_Tab', '<Alt>Above_Tab']
 switch-group-backward=['<Shift><Super>Above_Tab', '<Shift><Alt>Above_Tab']
 switch-panels=['<Control><Alt>Tab']
 switch-panels-backward=['<Shift><Control><Alt>Tab']
-switch-to-workspace-1=['<Super>Home']
+switch-to-workspace-1=['<Super>Page_Up']
+switch-to-workspace-2=['<Super>2']
+switch-to-workspace-3=['<Super>3']
+switch-to-workspace-4=['<Super>4']
 switch-to-workspace-down=@as []
-switch-to-workspace-last=['<Super>End']
-switch-to-workspace-left=@as []
-switch-to-workspace-right=@as []
+switch-to-workspace-last=['<Super>Page_Down']
+switch-to-workspace-left=['<Super>Home']
+switch-to-workspace-right=['<Super>End']
 switch-to-workspace-up=@as []
 switch-windows=['<Alt>Tab']
 switch-windows-backward=['<Shift><Alt>Tab']
@@ -237,7 +335,11 @@ toggle-tiled-right=@as []
 restore-shortcuts=['<Super>Escape']
 
 [org/gnome/nautilus/icon-view]
+captions=['date_created', 'none', 'none']
 default-zoom-level='small'
+
+[org/gnome/nautilus/list-view]
+default-zoom-level='medium'
 
 [org/gnome/nautilus/preferences]
 default-folder-viewer='icon-view'
@@ -247,6 +349,15 @@ recursive-search='never'
 [org/gnome/nautilus/window-state]
 initial-size=(890, 550)
 initial-size-file-chooser=(890, 550)
+maximized=false
+
+[org/gnome/nm-applet/eap/83a9301f-fa00-4c77-8ed0-7352bf1b4a47]
+ignore-ca-cert=false
+ignore-phase2-ca-cert=false
+
+[org/gnome/nm-applet/eap/f978403c-1e8b-4ed2-8c38-d1d6d0c3503a]
+ignore-ca-cert=false
+ignore-phase2-ca-cert=false
 
 [org/gnome/papers]
 night-mode=false
@@ -255,7 +366,7 @@ night-mode=false
 annot-color='yellow'
 continuous=true
 dual-page=false
-dual-page-odd-left=false
+dual-page-odd-left=true
 enable-spellchecking=true
 eraser-mode-objects='true'
 highlight-color='yellow'
@@ -269,13 +380,19 @@ window-height=832
 window-maximized=true
 
 [org/gnome/portal/filechooser/com.google.Chrome]
-last-folder-path='/home/nikhil/Desktop'
+last-folder-path='/home/nikhil/Desktop/resume_final'
+
+[org/gnome/portal/filechooser/md.obsidian.Obsidian]
+last-folder-path='/home/nikhil/obsidian-notes'
 
 [org/gnome/portal/filechooser/org.gnome.Nautilus]
 last-folder-path='/home/nikhil/Desktop'
 
 [org/gnome/portal/filechooser/org.gnome.TextEditor]
 last-folder-path='/home/nikhil/Desktop'
+
+[org/gnome/portal/filechooser/pgadmin4]
+last-folder-path='/home/nikhil/Downloads'
 
 [org/gnome/settings-daemon/global-shortcuts]
 applications=['com.github.hluk.copyq']
@@ -289,24 +406,42 @@ night-light-schedule-automatic=false
 
 [org/gnome/settings-daemon/plugins/media-keys]
 control-center=['<Super>i']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
 home=['<Super>e']
 rotate-video-lock-static=['<Super>o', 'XF86RotationLockToggle']
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Alt>b'
+command='/home/nikhil/.local/bin/bt-toggle.sh'
+name='Bluetooth Toggle'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1]
+binding='<Alt>v'
+command='/home/nikhil/.local/bin/bt-off.sh'
+name='Bluetooth Off'
 
 [org/gnome/settings-daemon/plugins/power]
 sleep-inactive-ac-timeout=3600
 sleep-inactive-ac-type='nothing'
 
 [org/gnome/shell]
-app-picker-layout=[{'org.gnome.Calculator.desktop': <{'position': <0>}>, 'gnome-language-selector.desktop': <{'position': <1>}>, 'net.nokyan.Resources.desktop': <{'position': <2>}>, 'update-manager.desktop': <{'position': <3>}>, 'org.gnome.TextEditor.desktop': <{'position': <4>}>, 'org.gnome.Characters.desktop': <{'position': <5>}>, 'Utilities': <{'position': <6>}>, 'System': <{'position': <7>}>, 'org.gnome.Extensions.desktop': <{'position': <8>}>, 'vlc.desktop': <{'position': <9>}>, 'htop.desktop': <{'position': <10>}>, 'com.mattjakeman.ExtensionManager.desktop': <{'position': <11>}>, 'uget-gtk.desktop': <{'position': <12>}>, 'org.gnome.Yelp.desktop': <{'position': <13>}>}]
-disabled-extensions=['snapd-search-provider@canonical.com', 'snapd-prompting@canonical.com', 'status-icons@gnome-shell-extensions.gcampax.github.com', 'workspace-indicator@gnome-shell-extensions.gcampax.github.com', 'window-list@gnome-shell-extensions.gcampax.github.com']
-enabled-extensions=['ding@rastersoft.com', 'ubuntu-dock@ubuntu.com', 'tiling-assistant@ubuntu.com', 'web-search-provider@ubuntu.com', 'Bluetooth-Battery-Meter@maniacx.github.com', 'clipboard-indicator@tudmotu.com', 'keyboard_modifiers_status@sneetsher', 'fullscreenworkspace@satran.in', 'paperwm@paperwm.github.com', 'fullscreen-workspace@local']
-favorite-apps=['org.gnome.Nautilus.desktop', 'google-chrome.desktop', 'org.gnome.Ptyxis.desktop', 'kiro.desktop', 'chrome-dnfpoenibinnbbckgbhendmlljoobcfg-Default.desktop', 'org.gnome.clocks.desktop', 'com.obsproject.Studio.desktop', 'code.desktop', 'brave-browser.desktop', 'org.gnome.Settings.desktop']
+app-picker-layout=[{'org.gnome.Calculator.desktop': <{'position': <0>}>, 'gnome-language-selector.desktop': <{'position': <1>}>, 'net.nokyan.Resources.desktop': <{'position': <2>}>, 'update-manager.desktop': <{'position': <3>}>, 'org.gnome.TextEditor.desktop': <{'position': <4>}>, 'org.gnome.Characters.desktop': <{'position': <5>}>, 'Utilities': <{'position': <6>}>, 'System': <{'position': <7>}>, 'org.gnome.Extensions.desktop': <{'position': <8>}>, 'htop.desktop': <{'position': <9>}>, 'com.mattjakeman.ExtensionManager.desktop': <{'position': <10>}>, 'freedownloadmanager.desktop': <{'position': <11>}>, 'org.gnome.Yelp.desktop': <{'position': <12>}>, 'auto-cpufreq-gtk.desktop': <{'position': <13>}>, 'libreoffice26.2-startcenter.desktop': <{'position': <14>}>, 'libreoffice26.2-base.desktop': <{'position': <15>}>, 'libreoffice26.2-calc.desktop': <{'position': <16>}>, 'libreoffice26.2-draw.desktop': <{'position': <17>}>, 'libreoffice26.2-impress.desktop': <{'position': <18>}>, 'libreoffice26.2-math.desktop': <{'position': <19>}>, 'libreoffice26.2-writer.desktop': <{'position': <20>}>, 'pgadmin4.desktop': <{'position': <21>}>, 'kiro.desktop': <{'position': <22>}>, 'gparted.desktop': <{'position': <23>}>}, {'chrome-dnfpoenibinnbbckgbhendmlljoobcfg-Default.desktop': <{'position': <0>}>, 'chrome-fmpnliohjhemenmnlpbfagaolkdacoja-Default.desktop': <{'position': <1>}>, 'code.desktop': <{'position': <2>}>, 'org.gnome.Calendar.desktop': <{'position': <3>}>, 'brave-Netflix.desktop': <{'position': <4>}>, 'RQuickShare.desktop': <{'position': <5>}>}]
+command-history=['lg', 'r']
+disable-user-extensions=false
+disabled-extensions=['snapd-search-provider@canonical.com', 'snapd-prompting@canonical.com', 'workspace-indicator@gnome-shell-extensions.gcampax.github.com', 'window-list@gnome-shell-extensions.gcampax.github.com', 'auto-move-windows@gnome-shell-extensions.gcampax.github.com', 'force-bluetooth-visible@local']
+enabled-extensions=['ding@rastersoft.com', 'ubuntu-dock@ubuntu.com', 'tiling-assistant@ubuntu.com', 'web-search-provider@ubuntu.com', 'clipboard-indicator@tudmotu.com', 'keyboard_modifiers_status@sneetsher', 'fullscreenworkspace@satran.in', 'paperwm@paperwm.github.com', 'fullscreen-workspace@local', 'auto-move-new-workspace@sobeitnow', 'Bluetooth-Battery-Meter@maniacx.github.com', 'quick-settings-tweaks@qwreey', 'status-icons@gnome-shell-extensions.gcampax.github.com', 'bluetooth-quick-connect@bjarosze.gmail.com', 'force-bt-visible@nikhil']
+favorite-apps=['org.gnome.Nautilus.desktop', 'org.gnome.Ptyxis.desktop', 'cursor.desktop', 'filezilla.desktop', 'google-chrome.desktop', 'org.gnome.clocks.desktop', 'com.obsproject.Studio.desktop', 'chrome-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop', 'md.obsidian.Obsidian.desktop', 'chrome-profile1.desktop', 'chrome-agimnkijcaahngcdmfeangaknmldooml-Default.desktop', 'Zoom.desktop', 'brave-mnhnbemhpieojjblbffcghbjhkmbbkle-Default.desktop', 'brave-browser.desktop', 'brave-cahffjldabkglhokmdffandpdlpkkoao-Default.desktop', 'chrome-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop', 'org.gnome.Settings.desktop', 'chrome-profile2.desktop', 'vlc.desktop']
 last-selected-power-profile='power-saver'
+looking-glass-history=["Object.getOwnPropertyNames(Meta.Window.prototype).sort().join('\\n')"]
 welcome-dialog-last-shown-version='50.1'
+
+[org/gnome/shell/app-switcher]
+current-workspace-only=false
 
 [org/gnome/shell/extensions/Bluetooth-Battery-Meter]
 circle-widget-custom-colors=['#ff7800', '#ff7800', '#15c931', '#15c931', '#15c931', '#15c931', '#15c931', '#15c931', '#15c931', '#15c931']
-device-list=['{"path":"/org/bluez/hci0/dev_A8_85_5D_4D_AF_6C","icon":"audio-headset","alias":"UBON BT-370","paired":true,"battery-reported":true,"qs-level":true,"indicator-mode":2,"enhanced-device":null,"connected-time":1779454991,"disconnected-time":1779450020}', '{"path":"/org/bluez/hci0/dev_98_BF_97_E5_76_8B","icon":"audio-headset","alias":"Macmerise Melody","paired":true,"battery-reported":true,"qs-level":true,"indicator-mode":2,"enhanced-device":null,"connected-time":1778262230,"disconnected-time":1778268924}', '{"path":"/org/bluez/hci0/dev_64_8F_DB_F3_C4_83","icon":"audio-headset","alias":"OPPO Enco Buds3 Pro","paired":true,"battery-reported":true,"qs-level":true,"indicator-mode":2,"enhanced-device":null,"connected-time":1778258992,"disconnected-time":1778258978}']
+device-list=['{"path":"/org/bluez/hci0/dev_A8_85_5D_4D_AF_6C","icon":"earbuds-stem","alias":"UBON BT-370","paired":true,"battery-reported":true,"qs-level":true,"indicator-mode":2,"enhanced-device":null,"connected-time":1788263530,"disconnected-time":1788253495}', '{"path":"/org/bluez/hci0/dev_98_BF_97_E5_76_8B","icon":"audio-speakers2","alias":"Macmerise Melody","paired":true,"battery-reported":true,"qs-level":true,"indicator-mode":2,"enhanced-device":null,"connected-time":1788285315,"disconnected-time":1787899152}', '{"path":"/org/bluez/hci0/dev_64_8F_DB_F3_C4_83","icon":"audio-headset","alias":"OPPO Enco Buds3 Pro","paired":true,"battery-reported":true,"qs-level":true,"indicator-mode":2,"enhanced-device":null,"connected-time":1788348317,"disconnected-time":1788348189}', '{"path":"/org/bluez/hci0/dev_C0_38_96_78_86_26","icon":"computer","alias":"DESKTOP-SDL9E62","paired":true,"battery-reported":true,"qs-level":true,"indicator-mode":2,"enhanced-device":null,"connected-time":1780591716,"disconnected-time":1780591702}', '{"path":"/org/bluez/hci0/dev_00_00_AB_CE_17_31","icon":"earbuds-stem","alias":"Airdopes 441","paired":true,"battery-reported":true,"qs-level":true,"indicator-mode":2,"enhanced-device":null,"connected-time":1782044204,"disconnected-time":1782044204}', '{"path":"/org/bluez/hci0/dev_AC_10_20_23_26_C6","icon":"bluetooth","alias":"STORM CALL","paired":true,"battery-reported":null,"qs-level":null,"indicator-mode":0,"enhanced-device":null,"connected-time":1788029752,"disconnected-time":1788029756}']
+disable-level-in-icon=false
 enable-battery-indicator-text=true
 enable-battery-level-text=true
 enable-on-hover-mode=false
@@ -317,16 +452,33 @@ level-indicator-type=0
 popup-in-quick-settings=false
 swap-icon-text=true
 
+[org/gnome/shell/extensions/auto-move-new-workspace]
+application-list=['cursor.desktop:1:true', 'filezilla.desktop:1:true', 'chrome-agimnkijcaahngcdmfeangaknmldooml-Default.desktop:1:true', 'chrome-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop:1:true', 'brave-cahffjldabkglhokmdffandpdlpkkoao-Default.desktop:1:true', 'brave-mnhnbemhpieojjblbffcghbjhkmbbkle-Default.desktop:1:true', 'md.obsidian.Obsidian.desktop:1:true']
+focus-new-workspace=true
+
+[org/gnome/shell/extensions/auto-move-windows]
+application-list=['cursor.desktop:2', 'filezilla.desktop:3']
+
+[org/gnome/shell/extensions/bluetooth-quick-connect]
+refresh-button-on=true
+show-battery-value-on=true
+
 [org/gnome/shell/extensions/clipboard-indicator]
 blink-icon-on-copy=false
+clear-history-interval=1440
+clear-history-on-interval=false
 display-mode=0
 history-size=100
-move-item-first=true
+move-item-first=false
+next-history-clear=-1
 open-at-cursor=true
-paste-on-select=true
+paste-button=true
+paste-on-select=false
 show-edit-button=false
 show-pin-button=false
 show-private-mode=false
+show-search-bar=false
+show-tag-button=false
 strip-text=true
 toggle-menu=['<Super>v']
 topbar-preview-size=20
@@ -339,6 +491,7 @@ dock-fixed=false
 dock-position='BOTTOM'
 extend-height=false
 height-fraction=0.90000000000000002
+isolate-workspaces=false
 preferred-monitor=-2
 preferred-monitor-by-connector='eDP-1'
 scroll-action='cycle-windows'
@@ -400,7 +553,11 @@ embed-previews=false
 focus-active-notification=@as []
 shift-overview-down=['<Super><Alt>Down']
 shift-overview-up=['<Super><Alt>Up']
-toggle-message-tray=['<Super>n']
+switch-to-application-2=@as []
+switch-to-application-3=@as []
+switch-to-application-4=@as []
+toggle-message-tray=['<Alt>n']
+toggle-quick-settings=['<Alt>s']
 
 [org/gnome/shell/ubuntu]
 startup-sound=''
@@ -417,3 +574,15 @@ sort-directories-first=true
 
 [org/gtk/settings/file-chooser]
 clock-format='12h'
+date-format='regular'
+location-mode='path-bar'
+show-hidden=false
+show-size-column=true
+show-type-column=true
+sidebar-width=208
+sort-column='name'
+sort-directories-first=true
+sort-order='ascending'
+type-format='category'
+window-position=(26, 23)
+window-size=(1203, 785)

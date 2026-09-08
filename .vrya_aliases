@@ -1,0 +1,24 @@
+# Vrya / Invoice Connect aliases
+# Sourced from ~/.bashrc
+
+# Local docker stack (repo: aurea-retail-invoice-hub)
+alias db='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; ./start-essential.sh'
+alias dba='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; docker compose up -d --build'
+alias da='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; ./start-essential.sh -f -r -w'
+alias dd='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; docker compose down'
+alias dbf='docker compose up -d --build invoicehub-frontend'
+alias dfd='docker compose down invoicehub-frontend'
+alias fl='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; ./start-dev-frontend.sh'
+
+# SFTP test container
+alias dbsftp='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; docker run -d --name test-sftp --network aurea-retail-invoice-hub_default -p 2222:22   -v ~/sftp-ace/in:/home/foo/in   atmoz/sftp foo:password123:1001'
+alias dbs='cd /home/nikhil/Desktop/vrya/aurea-retail-invoice-hub/docker; docker start test-sftp'
+alias dbm='docker run --rm -it -p 5000:80 -p 3025:25 rnwood/smtp4dev';
+
+
+# SSH to Invoice Connect instances
+alias ssh-ictest='ssh -i "~/Desktop/vrya/certificates/Invoice Connect Test Instance Key Pair.pem" ec2-user@ec2-54-157-13-198.compute-1.amazonaws.com'
+alias ssh-icdev='ssh -i "~/Desktop/vrya/certificates/MayankGuptaACE.pem" ec2-user@ec2-52-7-125-240.compute-1.amazonaws.com'
+alias ssh-icpreprod='ssh -i "~/Desktop/vrya/certificates/invoice-connect-preprod.pem" ec2-user@ec2-52-47-152-71.eu-west-3.compute.amazonaws.com'
+alias ssh-loop-ic-dev='ssh -i "~/Desktop/vrya/certificates/MayankGuptaACE.pem" -L 3100:localhost:3100 -L 9090:localhost:9090 -L 9093:localhost:9093 -L 3001:localhost:3001 ec2-user@ec2-52-7-125-240.compute-1.amazonaws.com'
+alias ssh-loop-ic-test='ssh -i "~/Desktop/vrya/certificates/Invoice Connect Test Instance Key Pair.pem" -L 3100:localhost:3100 -L 9090:localhost:9090 -L 9093:localhost:9093 -L 3001:localhost:3001 ec2-user@ec2-54-157-13-198.compute-1.amazonaws.com'

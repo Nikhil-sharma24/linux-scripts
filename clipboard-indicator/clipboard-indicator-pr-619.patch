@@ -1,0 +1,106 @@
+From b86e4624e082c7613c4886eba707d423fbdf67ab Mon Sep 17 00:00:00 2001
+From: Gocql Lu <gocql@foxmail.com>
+Date: Sat, 16 May 2026 21:11:50 +0800
+Subject: [PATCH 1/2] fix:"move the item to the top after selection" not
+ effective when enable both "paste on select" and "move the item to the top
+ after selection"
+
+---
+ extension.js | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
+
+diff --git a/extension.js b/extension.js
+index f93f7fd..a586f2e 100644
+--- a/extension.js
++++ b/extension.js
+@@ -969,8 +969,19 @@ const ClipboardIndicator = GObject.registerClass({
+         }
+ 
+         // Ensure MOVE_ITEM_FIRST also applies when PASTE_ON_SELECT fast-path skips _refreshIndicator()
+-        if (PASTE_ON_SELECT && MOVE_ITEM_FIRST && !menuItem.entry.isFavorite()) {
++        if (!menuItem.entry.isFavorite() && MOVE_ITEM_FIRST) {
++            this._skipMoveInRefresh = true;
+             this._moveItemFirst(menuItem);
++
++            // #pasteItem sets preventIndicatorUpdate which blocks the
++            // indicator refresh inside _addEntry → _selectMenuItem, so
++            // force an update here to keep the panel in sync.
++            if (this.preventIndicatorUpdate) {
++                const saved = this.preventIndicatorUpdate;
++                this.preventIndicatorUpdate = false;
++                this.#updateIndicatorContent(menuItem.entry);
++                this.preventIndicatorUpdate = saved;
++            }
+         }
+ 
+         menuItem.menu.close();
+@@ -1025,7 +1036,11 @@ const ClipboardIndicator = GObject.registerClass({
+                         this._selectMenuItem(menuItem, false);
+ 
+                         if (!menuItem.entry.isFavorite() && MOVE_ITEM_FIRST) {
+-                            this._moveItemFirst(menuItem);
++                            if (this._skipMoveInRefresh) {
++                                this._skipMoveInRefresh = false;
++                            } else {
++                                this._moveItemFirst(menuItem);
++                            }
+                         }
+ 
+                         return;
+@@ -1648,8 +1663,6 @@ const ClipboardIndicator = GObject.registerClass({
+ 
+             this._pastingResetTimeout = setTimeout(() => {
+                 this.preventIndicatorUpdate = false;
+-                if (currentlySelected && currentlySelected.entry)
+-                    this.#updateClipboard(currentlySelected.entry);
+             }, 50);
+         }, 50);
+     }
+-- 
+2.53.0
+
+
+From f8a21b6d63232ce4e9d6ae337fb3f6443149e15b Mon Sep 17 00:00:00 2001
+From: Gocql Lu <gocql@foxmail.com>
+Date: Sat, 16 May 2026 22:14:57 +0800
+Subject: [PATCH 2/2] fix:always sync indicator with selected item whatever
+ MOVE_ITEM_FIRST enabled or not
+
+---
+ extension.js | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/extension.js b/extension.js
+index a586f2e..8b87d58 100644
+--- a/extension.js
++++ b/extension.js
+@@ -972,16 +972,17 @@ const ClipboardIndicator = GObject.registerClass({
+         if (!menuItem.entry.isFavorite() && MOVE_ITEM_FIRST) {
+             this._skipMoveInRefresh = true;
+             this._moveItemFirst(menuItem);
++        }
+ 
+-            // #pasteItem sets preventIndicatorUpdate which blocks the
+-            // indicator refresh inside _addEntry → _selectMenuItem, so
+-            // force an update here to keep the panel in sync.
+-            if (this.preventIndicatorUpdate) {
+-                const saved = this.preventIndicatorUpdate;
+-                this.preventIndicatorUpdate = false;
+-                this.#updateIndicatorContent(menuItem.entry);
+-                this.preventIndicatorUpdate = saved;
+-            }
++        // #pasteItem sets preventIndicatorUpdate which blocks the
++        // indicator refresh inside _addEntry → _selectMenuItem, so
++        // force an update here to keep the panel in sync with the
++        // selected item (regardless of whether MOVE_ITEM_FIRST is on).
++        if (this.preventIndicatorUpdate) {
++            const saved = this.preventIndicatorUpdate;
++            this.preventIndicatorUpdate = false;
++            this.#updateIndicatorContent(menuItem.entry);
++            this.preventIndicatorUpdate = saved;
+         }
+ 
+         menuItem.menu.close();
+-- 
+2.53.0
+

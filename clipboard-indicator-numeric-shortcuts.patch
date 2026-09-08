@@ -1,0 +1,862 @@
+diff --git a/INSTALL_INSTRUCTIONS.md b/INSTALL_INSTRUCTIONS.md
+new file mode 100644
+index 0000000..41e5cc3
+--- /dev/null
++++ b/INSTALL_INSTRUCTIONS.md
+@@ -0,0 +1,65 @@
++# Installation Instructions
++
++## Manual Installation (Recommended)
++
++Since you're already in the extension directory, the files are already in place. You just need to reload the extension:
++
++### Method 1: Restart GNOME Shell
++**X11:**
++```bash
++# Press Alt+F2, type 'r' and press Enter
++```
++
++**Wayland:**
++```bash
++# Log out and log back in
++```
++
++### Method 2: Disable and Re-enable Extension
++```bash
++# Disable the extension
++gnome-extensions disable clipboard-indicator@tudmotu.com
++
++# Re-enable the extension
++gnome-extensions enable clipboard-indicator@tudmotu.com
++```
++
++## Compile Settings (Required if schema changed)
++
++Since we didn't modify the schema, this is optional but recommended:
++
++```bash
++make compile-settings
++```
++
++This compiles the GSettings schema files in the `schemas/` directory.
++
++## Verify Installation
++
++```bash
++# Check if extension is enabled
++gnome-extensions list --enabled | grep clipboard-indicator
++
++# Check for any errors
++journalctl -f -o cat /usr/bin/gnome-shell
++```
++
++## New Feature: Numeric Quick-Selection
++
++### Usage:
++- Open the Clipboard Indicator menu
++- Press **Ctrl+1** through **Ctrl+9** to select items 1-9
++- Numbers 1-9 are displayed next to visible items
++- Works with search filtering (selects from filtered results)
++- **Works even when search field is focused** - you can type to search, then Ctrl+Number to select
++- With "Paste on select" ON: immediately pastes the item
++- With "Move item to top after selection" ON: moves selected item to top
++
++### Notes:
++- Only first 9 visible items show numbers
++- Numbers update dynamically when:
++  - Menu opens
++  - Search filters items
++  - Items are added/removed/moved/pinned
++- Preserves PR #619 race-condition fix
++- Ctrl+Number works in all contexts: terminals, browsers, web forms, etc.
+diff --git a/RELOAD.sh b/RELOAD.sh
+new file mode 100755
+index 0000000..1cf950e
+--- /dev/null
++++ b/RELOAD.sh
+@@ -0,0 +1,22 @@
++#!/bin/bash
++# Quick reload script for the extension
++
++echo "Disabling extension..."
++gnome-extensions disable clipboard-indicator@tudmotu.com
++
++echo "Waiting 1 second..."
++sleep 1
++
++echo "Re-enabling extension..."
++gnome-extensions enable clipboard-indicator@tudmotu.com
++
++echo "Done! Extension reloaded."
++echo ""
++echo "To test:"
++echo "1. Open Clipboard Indicator menu"
++echo "2. You should see numbers 1-9 next to the first 9 items"
++echo "3. Press Ctrl+1, Ctrl+2, etc. to select items"
++echo "4. Try searching - numbers update for filtered results"
++echo ""
++echo "Watch for errors:"
++echo "  journalctl -f -o cat /usr/bin/gnome-shell | grep -i clipboard"
+diff --git a/STATUS.md b/STATUS.md
+new file mode 100644
+index 0000000..baf5eb9
+--- /dev/null
++++ b/STATUS.md
+@@ -0,0 +1,65 @@
++# Clipboard Indicator - Numeric Shortcuts Implementation Status
++
++## Goal
++Add numeric quick-selection shortcuts to Clipboard Indicator extension:
++1. **Ctrl+1-9 in menu**: While clipboard menu is open, press Ctrl+Number to paste the Nth visible item
++2. **Ctrl+Alt+1-9 direct paste**: Press Ctrl+Alt+Number to paste directly without opening menu
++3. **Number labels 1-9**: Display numbers next to first 9 visible items in menu
++
++## Current Status: TESTING FIX
++
++### What's Working ✅
++- Number labels (1-9) display correctly next to items in menu
++- CSS styling for number labels
++- `_updateNumberLabels()` dynamically updates when items filtered/moved/removed
++- Schema entries for direct-paste-1 through direct-paste-9
++- Constants in constants.js
++- Prefs UI for shortcuts
++- Keybindings registered and callbacks triggered
++- Logs confirm methods are being called
++
++### What's NOT Working ❌
++- **Ctrl+1-9 in menu**: Doesn't paste
++- **Ctrl+Alt+1-9 direct paste**: Doesn't paste (copies to clipboard but paste doesn't happen)
++
++### Root Cause Identified
++The virtual keyboard sends Shift+Insert keystrokes, but **there's no focused window to receive them**:
++- When 'v' key is pressed: menuItem.actor has focus, works ✅
++- When Ctrl+Number pressed from search: searchEntry has focus, NOT target window ❌
++- When Ctrl+Alt+Number pressed: extension has focus, NOT target window ❌
++- The Shift+Insert keypress is sent but goes nowhere
++
++### Solution Implemented (NEEDS TESTING)
++Modified `#pasteItem` method:
++1. Update clipboard
++2. **Close menu first** (returns focus to previously focused window)
++3. Wait 150ms (increased from 50ms) for focus to return
++4. THEN send Shift+Insert keystrokes
++
++The key is: menu.close() must happen BEFORE setTimeout, and we need longer delay for focus transfer.
++
++## Testing Instructions
++1. Compile schema: `make compile-settings`
++2. **Logout and login** (required on Wayland)
++3. Populate clipboard: `./populate_clipboard.sh`
++4. Test Ctrl+Alt+3 from browser address bar (should paste item3)
++5. Test open menu with Super+V, then Ctrl+2 (should paste item2)
++6. Check logs: `journalctl -f -o cat /usr/bin/gnome-shell | grep "Clipboard Indicator"`
++
++## User Environment
++- **OS**: Wayland (not X11)
++- **Settings**: Paste on select = ON, Move item to top = ON
++- **Note**: Changes require logout/login, cannot use Alt+F2+'r'
++
++## Files Modified
++- `extension.js`: Main implementation
++- `schemas/org.gnome.shell.extensions.clipboard-indicator.gschema.xml`: Keybinding definitions
++- `constants.js`: Field constants
++- `prefs.js`: UI for shortcuts
++- `stylesheet.css`: Number label styling
++- `keyboard.js`: Virtual keyboard (unchanged, uses Clutter virtual device)
++
++## Next Steps
++1. Test the fix (requires user logout/login)
++2. If still not working: Check if menu.close() actually returns focus
++3. Alternative approach if this fails: Try `Main.panel.menuManager._grabber` or focus manipulation
+diff --git a/constants.js b/constants.js
+index b709b57..6902301 100644
+--- a/constants.js
++++ b/constants.js
+@@ -24,6 +24,15 @@ export const PrefsFields = {
+     BINDING_PREV_ENTRY              : 'prev-entry',
+     BINDING_NEXT_ENTRY              : 'next-entry',
+     BINDING_PRIVATE_MODE            : 'private-mode-binding',
++    BINDING_DIRECT_PASTE_1          : 'direct-paste-1',
++    BINDING_DIRECT_PASTE_2          : 'direct-paste-2',
++    BINDING_DIRECT_PASTE_3          : 'direct-paste-3',
++    BINDING_DIRECT_PASTE_4          : 'direct-paste-4',
++    BINDING_DIRECT_PASTE_5          : 'direct-paste-5',
++    BINDING_DIRECT_PASTE_6          : 'direct-paste-6',
++    BINDING_DIRECT_PASTE_7          : 'direct-paste-7',
++    BINDING_DIRECT_PASTE_8          : 'direct-paste-8',
++    BINDING_DIRECT_PASTE_9          : 'direct-paste-9',
+     CLEAR_ON_BOOT                   : 'clear-on-boot',
+     PASTE_ON_SELECT                 : 'paste-on-select',
+     CACHE_IMAGES                    : 'cache-images',
+diff --git a/extension.js b/extension.js
+index f93f7fd..dd838e4 100644
+--- a/extension.js
++++ b/extension.js
+@@ -86,6 +86,7 @@ const ClipboardIndicator = GObject.registerClass({
+     GTypeName: 'ClipboardIndicator'
+ }, class ClipboardIndicator extends PanelMenu.Button {
+     #refreshInProgress = false;
++    #refreshQueued = false;
+     #_imagePreviewOverlay = null;
+ 
+     destroy () {
+@@ -250,12 +251,20 @@ const ClipboardIndicator = GObject.registerClass({
+             this._onSearchTextChanged.bind(this)
+         );
+ 
++        // Handle Ctrl+Number shortcuts even when search has focus
++        this.searchEntry.get_clutter_text().connect('key-press-event',
++            (_actor, event) => this.#handleMenuNumericShortcut(event));
++        this.searchEntry.connect('key-press-event',
++            (_actor, event) => this.#handleMenuNumericShortcut(event));
++
+         this._entryItem.add_child(this.searchEntry);
+ 
+         this.menu.connect('open-state-changed', (self, open) => {
+             this._setFocusOnOpenTimeout = setTimeout(() => {
+                 if (!open) return;
+ 
++                this._updateNumberLabels();
++
+                 if (this._focusItemOnOpen) {
+                     const item = this._focusItemOnOpen;
+                     this._focusItemOnOpen = null;
+@@ -272,6 +281,10 @@ const ClipboardIndicator = GObject.registerClass({
+             }, 50);
+         });
+ 
++        // Numeric quick-selection shortcuts (Ctrl+1 through Ctrl+9)
++        this.menu.actor.connect('key-press-event',
++            (_actor, event) => this.#handleMenuNumericShortcut(event));
++
+         // Create menu sections for items
+         // Favorites
+         this.favoritesSection = new PopupMenu.PopupMenuSection();
+@@ -541,6 +554,8 @@ const ClipboardIndicator = GObject.registerClass({
+                 mItem.actor.visible = isMatching;
+             });
+         }
++
++        this._updateNumberLabels();
+     }
+ 
+     _truncate (string, length) {
+@@ -613,6 +628,15 @@ const ClipboardIndicator = GObject.registerClass({
+         menuItem.clipContents = entry.getStringValue();
+         menuItem.radioGroup = this.clipItemsRadioGroup;
+ 
++        // Add number label for quick selection (initially hidden)
++        menuItem.numberLabel = new St.Label({
++            text: '',
++            style_class: 'ci-number-label',
++            y_align: Clutter.ActorAlign.CENTER,
++            visible: false
++        });
++        menuItem.actor.insert_child_at_index(menuItem.numberLabel, 0);
++
+         // CLICK fix for Paste on Select: clicking behaves like Enter
+         menuItem.connect('activate', () => {
+             if (PASTE_ON_SELECT) {
+@@ -629,6 +653,9 @@ const ClipboardIndicator = GObject.registerClass({
+             AnimationUtils.ensureActorVisibleInScrollView(viewToScroll, menuItem);
+         });
+         menuItem.actor.connect('key-press-event', (actor, event) => {
++            if (this.#handleMenuNumericShortcut(event) === Clutter.EVENT_STOP)
++                return Clutter.EVENT_STOP;
++
+             switch (event.get_key_symbol()) {
+                 case Clutter.KEY_Delete:
+                     if (menuItem.entry.isFavorite()) {
+@@ -877,6 +904,11 @@ const ClipboardIndicator = GObject.registerClass({
+                 : _("Clipboard history cleared");
+             this._showNotification(message);
+         }
++        
++        // Update number labels after clear (only if menu is open)
++        if (this.menu.isOpen) {
++            this._updateNumberLabels();
++        }
+     }
+ 
+     _removeAll () {
+@@ -905,6 +937,11 @@ const ClipboardIndicator = GObject.registerClass({
+ 
+         this._updateCache();
+         this.#showElements();
++        
++        // Update number labels after removal (only if menu is open)
++        if (this.menu.isOpen) {
++            this._updateNumberLabels();
++        }
+     }
+ 
+     _removeOldestEntries () {
+@@ -969,11 +1006,26 @@ const ClipboardIndicator = GObject.registerClass({
+         }
+ 
+         // Ensure MOVE_ITEM_FIRST also applies when PASTE_ON_SELECT fast-path skips _refreshIndicator()
+-        if (PASTE_ON_SELECT && MOVE_ITEM_FIRST && !menuItem.entry.isFavorite()) {
++        if (!menuItem.entry.isFavorite() && MOVE_ITEM_FIRST) {
++            this._skipMoveInRefresh = true;
+             this._moveItemFirst(menuItem);
+         }
+ 
+-        menuItem.menu.close();
++        // #pasteItem sets preventIndicatorUpdate which blocks the
++        // indicator refresh inside _addEntry → _selectMenuItem, so
++        // force an update here to keep the panel in sync with the
++        // selected item (regardless of whether MOVE_ITEM_FIRST is on).
++        if (this.preventIndicatorUpdate) {
++            const saved = this.preventIndicatorUpdate;
++            this.preventIndicatorUpdate = false;
++            this.#updateIndicatorContent(menuItem.entry);
++            this.preventIndicatorUpdate = saved;
++        }
++
++        // Only close menu if it's still open
++        if (this.menu.isOpen) {
++            menuItem.menu.close();
++        }
+     }
+ 
+     _getCache () {
+@@ -1010,7 +1062,10 @@ const ClipboardIndicator = GObject.registerClass({
+ 
+         if (wmClass && EXCLUDED_APPS.includes(wmClass)) return; // Excluded app, do not.
+ 
+-        if (this.#refreshInProgress) return;
++        if (this.#refreshInProgress) {
++            this.#refreshQueued = true;
++            return;
++        }
+         this.#refreshInProgress = true;
+ 
+         try {
+@@ -1020,27 +1075,35 @@ const ClipboardIndicator = GObject.registerClass({
+             }
+ 
+             if (result) {
++                let alreadyPresent = false;
+                 for (let menuItem of this.clipItemsRadioGroup) {
+                     if (menuItem.entry.equals(result)) {
++                        alreadyPresent = true;
+                         this._selectMenuItem(menuItem, false);
+ 
+                         if (!menuItem.entry.isFavorite() && MOVE_ITEM_FIRST) {
+-                            this._moveItemFirst(menuItem);
++                            if (this._skipMoveInRefresh) {
++                                this._skipMoveInRefresh = false;
++                            } else {
++                                this._moveItemFirst(menuItem);
++                            }
+                         }
+ 
+-                        return;
++                        break;
+                     }
+                 }
+ 
+-                this.#addToCache(result);
+-                this._addEntry(result, true, false);
+-                this._removeOldestEntries();
+-                if (NOTIFY_ON_COPY) {
+-                    this._showNotification(_("Copied to clipboard"), notif => {
+-                        notif.addAction(_('Cancel'), this._cancelNotification);
+-                    });
++                if (!alreadyPresent) {
++                    this.#addToCache(result);
++                    this._addEntry(result, true, false);
++                    this._removeOldestEntries();
++                    if (NOTIFY_ON_COPY) {
++                        this._showNotification(_("Copied to clipboard"), notif => {
++                            notif.addAction(_('Cancel'), this._cancelNotification);
++                        });
++                    }
++                    this._blinkIcon();
+                 }
+-                this._blinkIcon();
+             }
+         }
+         catch (e) {
+@@ -1049,6 +1112,10 @@ const ClipboardIndicator = GObject.registerClass({
+         }
+         finally {
+             this.#refreshInProgress = false;
++            if (this.#refreshQueued) {
++                this.#refreshQueued = false;
++                this._refreshIndicator();
++            }
+         }
+     }
+ 
+@@ -1056,6 +1123,11 @@ const ClipboardIndicator = GObject.registerClass({
+         this._removeEntry(item);
+         this._addEntry(item.entry, item.currentlySelected, false);
+         this._updateCache();
++        
++        // Update number labels after move is complete (only if menu is open)
++        if (this.menu.isOpen) {
++            this._updateNumberLabels();
++        }
+     }
+ 
+     _findItem (text) {
+@@ -1071,6 +1143,24 @@ const ClipboardIndicator = GObject.registerClass({
+         return this.historySection._getMenuItems().concat(this.favoritesSection._getMenuItems());
+     }
+ 
++    _updateNumberLabels () {
++        const allItems = this.#getOrderedMenuItems();
++        const visibleItems = allItems.filter(item => item.actor.visible);
++        
++        // Update all items
++        allItems.forEach((item, idx) => {
++            if (!item.numberLabel) return;
++            
++            const visibleIndex = visibleItems.indexOf(item);
++            if (visibleIndex >= 0 && visibleIndex < 9) {
++                item.numberLabel.text = `${visibleIndex + 1}`;
++                item.numberLabel.visible = true;
++            } else {
++                item.numberLabel.visible = false;
++            }
++        });
++    }
++
+     _setupListener () {
+         const metaDisplay = Shell.Global.get().get_display();
+         const selection = metaDisplay.get_selection();
+@@ -1465,6 +1555,17 @@ const ClipboardIndicator = GObject.registerClass({
+         this._bindShortcut(PrefsFields.BINDING_NEXT_ENTRY, this._nextEntry);
+         this._bindShortcut(PrefsFields.BINDING_TOGGLE_MENU, this._toggleMenu);
+         this._bindShortcut(PrefsFields.BINDING_PRIVATE_MODE, this.togglePrivateMode);
++        
++        // Direct paste shortcuts
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_1, () => this._directPasteItem(0));
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_2, () => this._directPasteItem(1));
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_3, () => this._directPasteItem(2));
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_4, () => this._directPasteItem(3));
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_5, () => this._directPasteItem(4));
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_6, () => this._directPasteItem(5));
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_7, () => this._directPasteItem(6));
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_8, () => this._directPasteItem(7));
++        this._bindShortcut(PrefsFields.BINDING_DIRECT_PASTE_9, () => this._directPasteItem(8));
+     }
+ 
+     _unbindShortcuts () {
+@@ -1476,15 +1577,18 @@ const ClipboardIndicator = GObject.registerClass({
+     }
+ 
+     _bindShortcut (name, cb) {
+-        Main.wm.addKeybinding(
+-            name,
+-            this.extension.settings,
+-            Meta.KeyBindingFlags.NONE,
+-            Shell.ActionMode.ALL,
+-            cb.bind(this)
+-        );
+-
+-        this._shortcutsBindingIds.push(name);
++        try {
++            Main.wm.addKeybinding(
++                name,
++                this.extension.settings,
++                Meta.KeyBindingFlags.NONE,
++                Shell.ActionMode.ALL,
++                cb.bind(this)
++            );
++            this._shortcutsBindingIds.push(name);
++        } catch (e) {
++            console.error(`Clipboard Indicator: failed to bind ${name}`, e);
++        }
+     }
+ 
+     _updateTopbarLayout () {
+@@ -1622,36 +1726,147 @@ const ClipboardIndicator = GObject.registerClass({
+         this.menu.toggle();
+     }
+ 
++    _directPasteItem (index) {
++        if (PRIVATEMODE)
++            return true;
++
++        const items = this.#getOrderedMenuItems();
++        if (index < items.length)
++            this.#pasteItem(items[index]);
++        return true;
++    }
++
++    #getOrderedMenuItems () {
++        const history = this.historySection._getMenuItems();
++        const favorites = this.favoritesSection._getMenuItems();
++        return PINNED_ON_BOTTOM ? history.concat(favorites) : favorites.concat(history);
++    }
++
++    #getNumericShortcutIndex (event) {
++        try {
++            const state = event.get_state();
++            const hasCtrl = (typeof event.has_control_modifier === 'function')
++                ? event.has_control_modifier()
++                : (state & Clutter.ModifierType.CONTROL_MASK) !== 0;
++            if (!hasCtrl || (state & Clutter.ModifierType.MOD1_MASK))
++                return -1;
++
++            const unicode = event.get_key_unicode();
++            const ch = typeof unicode === 'number' ? String.fromCodePoint(unicode) : String(unicode);
++            if (ch >= '1' && ch <= '9')
++                return ch.charCodeAt(0) - '1'.charCodeAt(0);
++
++            const keyval = event.get_key_symbol();
++            if (keyval >= Clutter.KEY_1 && keyval <= Clutter.KEY_9)
++                return keyval - Clutter.KEY_1;
++            if (keyval >= Clutter.KEY_KP_1 && keyval <= Clutter.KEY_KP_9)
++                return keyval - Clutter.KEY_KP_1;
++        } catch (e) {
++            console.error('Clipboard Indicator: numeric shortcut parse failed', e);
++        }
++        return -1;
++    }
++
++    #handleMenuNumericShortcut (event) {
++        const index = this.#getNumericShortcutIndex(event);
++        if (index < 0)
++            return Clutter.EVENT_PROPAGATE;
++
++        const visibleItems = this.#getOrderedMenuItems().filter(item => item.actor.visible);
++        if (index >= visibleItems.length)
++            return Clutter.EVENT_PROPAGATE;
++
++        const menuItem = visibleItems[index];
++        if (PASTE_ON_SELECT) {
++            this.#pasteItem(menuItem);
++            this._onMenuItemSelectedAndMenuClose(menuItem, false);
++        } else {
++            this._onMenuItemSelectedAndMenuClose(menuItem, true);
++        }
++        return Clutter.EVENT_STOP;
++    }
+ 
++    #heldAcceleratorMods () {
++        try {
++            const pointer = global.get_pointer();
++            const mods = pointer[2] || 0;
++            return mods & (
++                Clutter.ModifierType.CONTROL_MASK |
++                Clutter.ModifierType.MOD1_MASK |
++                Clutter.ModifierType.MOD4_MASK |
++                Clutter.ModifierType.SUPER_MASK |
++                Clutter.ModifierType.SHIFT_MASK
++            );
++        } catch (e) {
++            return 0;
++        }
++    }
+ 
++    #afterKeysReleased (callback, maxWaitMs = 2000) {
++        if (this._pastingKeypressTimeout) {
++            clearTimeout(this._pastingKeypressTimeout);
++            this._pastingKeypressTimeout = null;
++        }
++
++        const started = Date.now();
++        const poll = () => {
++            this._pastingKeypressTimeout = null;
++            if (this._destroyed)
++                return;
++            if (!this.#heldAcceleratorMods() || Date.now() - started >= maxWaitMs) {
++                callback();
++                return;
++            }
++            this._pastingKeypressTimeout = setTimeout(poll, 30);
++        };
++
++        this._pastingKeypressTimeout = setTimeout(poll, 50);
++    }
++
++    #sendPasteKeystrokes () {
++        if (this.keyboard.purpose === Clutter.InputContentPurpose.TERMINAL) {
++            this.keyboard.press(Clutter.KEY_Control_L);
++            this.keyboard.press(Clutter.KEY_Shift_L);
++            this.keyboard.press(Clutter.KEY_Insert);
++            this.keyboard.release(Clutter.KEY_Insert);
++            this.keyboard.release(Clutter.KEY_Shift_L);
++            this.keyboard.release(Clutter.KEY_Control_L);
++        } else {
++            this.keyboard.press(Clutter.KEY_Shift_L);
++            this.keyboard.press(Clutter.KEY_Insert);
++            this.keyboard.release(Clutter.KEY_Insert);
++            this.keyboard.release(Clutter.KEY_Shift_L);
++        }
++    }
+ 
+     #pasteItem (menuItem) {
++        if (this._pastingResetTimeout) {
++            clearTimeout(this._pastingResetTimeout);
++            this._pastingResetTimeout = null;
++        }
++
+         this.menu.close();
+-        const currentlySelected = this._getCurrentlySelectedItem();
+         this.preventIndicatorUpdate = true;
+         this.#updateClipboard(menuItem.entry);
+-        this._pastingKeypressTimeout = setTimeout(() => {
+-            if (this.keyboard.purpose === Clutter.InputContentPurpose.TERMINAL) {
+-                this.keyboard.press(Clutter.KEY_Control_L);
+-                this.keyboard.press(Clutter.KEY_Shift_L);
+-                this.keyboard.press(Clutter.KEY_Insert);
+-                this.keyboard.release(Clutter.KEY_Insert);
+-                this.keyboard.release(Clutter.KEY_Shift_L);
+-                this.keyboard.release(Clutter.KEY_Control_L);
+-            }
+-            else {
+-                this.keyboard.press(Clutter.KEY_Shift_L);
+-                this.keyboard.press(Clutter.KEY_Insert);
+-                this.keyboard.release(Clutter.KEY_Insert);
+-                this.keyboard.release(Clutter.KEY_Shift_L);
+-            }
+ 
++        try {
++            const focusWindow = global.display.focusWindow;
++            if (focusWindow)
++                focusWindow.activate(global.get_current_time());
++        } catch (e) {
++            // Focus restore is best-effort; still try to paste.
++        }
++
++        this.#afterKeysReleased(() => {
++            try {
++                this.#sendPasteKeystrokes();
++            } catch (e) {
++                console.error('Clipboard Indicator: paste keystrokes failed', e);
++            }
+             this._pastingResetTimeout = setTimeout(() => {
+                 this.preventIndicatorUpdate = false;
+-                if (currentlySelected && currentlySelected.entry)
+-                    this.#updateClipboard(currentlySelected.entry);
+             }, 50);
+-        }, 50);
++        });
+     }
+ 
+     #showImagePreview (entry, onClose = null) {
+diff --git a/populate_clipboard.sh b/populate_clipboard.sh
+new file mode 100755
+index 0000000..807a048
+--- /dev/null
++++ b/populate_clipboard.sh
+@@ -0,0 +1,42 @@
++#!/bin/bash
++# Fill clipboard history with item1..item9 (item1 ends up most recent / first in the menu).
++set -euo pipefail
++
++if ! command -v wl-copy >/dev/null || ! command -v wl-paste >/dev/null; then
++    echo "wl-copy/wl-paste not found. Install wl-clipboard." >&2
++    exit 1
++fi
++
++# The extension drops copies that arrive while it is still reading the previous
++# one. Wait until this item is on the clipboard, then give the extension time
++# to ingest it before the next owner-change.
++copy_item() {
++    local text="$1"
++    printf '%s' "$text" | wl-copy -n -t text/plain
++
++    local i pasted=""
++    for i in $(seq 1 30); do
++        pasted="$(wl-paste -n -t text/plain 2>/dev/null || true)"
++        if [ "$pasted" = "$text" ]; then
++            break
++        fi
++        sleep 0.1
++    done
++
++    if [ "$pasted" != "$text" ]; then
++        echo "Failed to copy: $text" >&2
++        exit 1
++    fi
++
++    echo "Copied $text"
++    sleep 1.5
++}
++
++echo "Copying item9 → item1 (item1 will be first in the menu)..."
++for i in $(seq 9 -1 1); do
++    copy_item "item$i"
++done
++
++echo
++echo "Done. Open the clipboard menu — you should see item1 through item9."
++echo "Then try Ctrl+1 in the menu, or Ctrl+Alt+1 with the menu closed."
+diff --git a/prefs.js b/prefs.js
+index 50439f4..c5f580c 100644
+--- a/prefs.js
++++ b/prefs.js
+@@ -375,7 +375,16 @@ class Settings {
+         [PrefsFields.BINDING_TOGGLE_MENU]: _("Toggle the menu"),
+         [PrefsFields.BINDING_CLEAR_HISTORY]: _("Clear history"),
+         [PrefsFields.BINDING_PREV_ENTRY]: _("Previous entry"),
+-        [PrefsFields.BINDING_NEXT_ENTRY]: _("Next entry")
++        [PrefsFields.BINDING_NEXT_ENTRY]: _("Next entry"),
++        [PrefsFields.BINDING_DIRECT_PASTE_1]: _("Direct paste item 1"),
++        [PrefsFields.BINDING_DIRECT_PASTE_2]: _("Direct paste item 2"),
++        [PrefsFields.BINDING_DIRECT_PASTE_3]: _("Direct paste item 3"),
++        [PrefsFields.BINDING_DIRECT_PASTE_4]: _("Direct paste item 4"),
++        [PrefsFields.BINDING_DIRECT_PASTE_5]: _("Direct paste item 5"),
++        [PrefsFields.BINDING_DIRECT_PASTE_6]: _("Direct paste item 6"),
++        [PrefsFields.BINDING_DIRECT_PASTE_7]: _("Direct paste item 7"),
++        [PrefsFields.BINDING_DIRECT_PASTE_8]: _("Direct paste item 8"),
++        [PrefsFields.BINDING_DIRECT_PASTE_9]: _("Direct paste item 9")
+     };
+ 
+     #buildShorcuts (group) {
+diff --git a/schemas/gschemas.compiled b/schemas/gschemas.compiled
+index 6dd240e..7c9b917 100644
+Binary files a/schemas/gschemas.compiled and b/schemas/gschemas.compiled differ
+diff --git a/schemas/org.gnome.shell.extensions.clipboard-indicator.gschema.xml b/schemas/org.gnome.shell.extensions.clipboard-indicator.gschema.xml
+index 328de29..9d17d89 100644
+--- a/schemas/org.gnome.shell.extensions.clipboard-indicator.gschema.xml
++++ b/schemas/org.gnome.shell.extensions.clipboard-indicator.gschema.xml
+@@ -224,6 +224,69 @@
+                 Key to toggle the private mode
+             </description>
+         </key>
++        <key name="direct-paste-1" type="as">
++        <default><![CDATA[['<Control><Alt>1']]]></default>
++            <summary>Direct paste item 1</summary>
++            <description>
++                Key to paste the first clipboard item without opening menu
++            </description>
++        </key>
++        <key name="direct-paste-2" type="as">
++        <default><![CDATA[['<Control><Alt>2']]]></default>
++            <summary>Direct paste item 2</summary>
++            <description>
++                Key to paste the second clipboard item without opening menu
++            </description>
++        </key>
++        <key name="direct-paste-3" type="as">
++        <default><![CDATA[['<Control><Alt>3']]]></default>
++            <summary>Direct paste item 3</summary>
++            <description>
++                Key to paste the third clipboard item without opening menu
++            </description>
++        </key>
++        <key name="direct-paste-4" type="as">
++        <default><![CDATA[['<Control><Alt>4']]]></default>
++            <summary>Direct paste item 4</summary>
++            <description>
++                Key to paste the fourth clipboard item without opening menu
++            </description>
++        </key>
++        <key name="direct-paste-5" type="as">
++        <default><![CDATA[['<Control><Alt>5']]]></default>
++            <summary>Direct paste item 5</summary>
++            <description>
++                Key to paste the fifth clipboard item without opening menu
++            </description>
++        </key>
++        <key name="direct-paste-6" type="as">
++        <default><![CDATA[['<Control><Alt>6']]]></default>
++            <summary>Direct paste item 6</summary>
++            <description>
++                Key to paste the sixth clipboard item without opening menu
++            </description>
++        </key>
++        <key name="direct-paste-7" type="as">
++        <default><![CDATA[['<Control><Alt>7']]]></default>
++            <summary>Direct paste item 7</summary>
++            <description>
++                Key to paste the seventh clipboard item without opening menu
++            </description>
++        </key>
++        <key name="direct-paste-8" type="as">
++        <default><![CDATA[['<Control><Alt>8']]]></default>
++            <summary>Direct paste item 8</summary>
++            <description>
++                Key to paste the eighth clipboard item without opening menu
++            </description>
++        </key>
++        <key name="direct-paste-9" type="as">
++        <default><![CDATA[['<Control><Alt>9']]]></default>
++            <summary>Direct paste item 9</summary>
++            <description>
++                Key to paste the ninth clipboard item without opening menu
++            </description>
++        </key>
+         <key name="cache-images" type="b">
+             <default>true</default>
+             <summary>Cache images</summary>
+diff --git a/stylesheet.css b/stylesheet.css
+index 0344361..5e8ba2e 100644
+--- a/stylesheet.css
++++ b/stylesheet.css
+@@ -97,3 +97,12 @@
+     padding: 8px;
+     min-width: 384px;
+ }
++
++.ci-number-label {
++    font-size: 0.9em;
++    font-weight: bold;
++    color: rgba(255, 255, 255, 0.5);
++    min-width: 1.5em;
++    text-align: center;
++    margin-right: 0.5em;
++}
+diff --git a/test_items.txt b/test_items.txt
+new file mode 100644
+index 0000000..d3cf319
+--- /dev/null
++++ b/test_items.txt
+@@ -0,0 +1,9 @@
++item1
++item2
++item3
++item4
++item5
++item6
++item7
++item8
++item9
+diff --git a/test_shortcuts.sh b/test_shortcuts.sh
+new file mode 100755
+index 0000000..00196b8
+--- /dev/null
++++ b/test_shortcuts.sh
+@@ -0,0 +1,36 @@
++#!/bin/bash
++
++echo "=== Clipboard Indicator Shortcuts Test ==="
++echo ""
++
++echo "1. Checking if schema is loaded..."
++if gsettings list-keys org.gnome.shell.extensions.clipboard-indicator &>/dev/null; then
++    echo "✅ Schema loaded"
++    echo ""
++    echo "Checking direct-paste bindings:"
++    for i in {1..9}; do
++        binding=$(gsettings get org.gnome.shell.extensions.clipboard-indicator direct-paste-$i)
++        echo "  direct-paste-$i: $binding"
++    done
++else
++    echo "❌ Schema NOT loaded"
++    echo "Run: make compile-settings"
++fi
++
++echo ""
++echo "2. Checking if extension is enabled..."
++if gnome-extensions list --enabled | grep clipboard-indicator; then
++    echo "✅ Extension enabled"
++else
++    echo "❌ Extension NOT enabled"
++fi
++
++echo ""
++echo "3. Test instructions:"
++echo "   - Populate clipboard with test items: ./populate_clipboard.sh"
++echo "   - Open menu with Super+V"
++echo "   - Try Ctrl+2 (should paste item2)"
++echo "   - Try Ctrl+Alt+3 without menu (should paste item3)"
++echo ""
++echo "4. Watch logs while testing:"
++echo "   journalctl -f -o cat /usr/bin/gnome-shell | grep 'Clipboard Indicator'"

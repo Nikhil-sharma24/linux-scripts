@@ -2,5 +2,8 @@
 focus-active-notification=@as []
 shift-overview-down=['<Super><Alt>Down']
 shift-overview-up=['<Super><Alt>Up']
+switch-to-application-2=@as []
+switch-to-application-3=@as []
+switch-to-application-4=@as []
 toggle-message-tray=['<Alt>n']
 toggle-quick-settings=['<Alt>s']

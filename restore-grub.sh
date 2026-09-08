@@ -25,10 +25,11 @@ fi
 
 TIMESTAMP="$(date +%Y%m%d%H%M%S)"
 BACKUP_NAME="$(basename "$BACKUP_FILE")"
+mkdir -p "$GRUB_DIR/backup";
 
 if [[ -f "$TARGET_FILE" ]]; then
-  cp -v "$TARGET_FILE" "$GRUB_DIR/grub.cfg.bak.$TIMESTAMP"
-  echo "Previous GRUB config saved as $GRUB_DIR/grub.cfg.bak.$TIMESTAMP"
+  cp -v "$TARGET_FILE" "$GRUB_DIR/backup/grub.cfg.bak.$TIMESTAMP"
+  echo "Previous GRUB config saved as $GRUB_DIR/backup/grub.cfg.bak.$TIMESTAMP"
 else
   echo "No previous GRUB config was present."
 fi

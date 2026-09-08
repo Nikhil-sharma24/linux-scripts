@@ -8,3 +8,8 @@ rotate-video-lock-static=['<Super>o', 'XF86RotationLockToggle']
 binding='<Alt>b'
 command='/home/nikhil/.local/bin/bt-toggle.sh'
 name='Bluetooth Toggle'
+
+[custom-keybindings/custom1]
+binding='<Alt>v'
+command='/home/nikhil/.local/bin/bt-off.sh'
+name='Bluetooth Off'
